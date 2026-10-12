@@ -45,3 +45,7 @@ def predict(tx: Transaction):
     row = pd.DataFrame([tx.model_dump()])[FEATURES]
     prob = float(model.predict_proba(row)[0, 1])
     return {"fraud_probability": round(prob, 4), "is_fraud": prob >= 0.5}
+
+@app.get("/")
+def root():
+    return {"service": "Fraud Detection API", "docs": "/docs", "health": "/health"}
