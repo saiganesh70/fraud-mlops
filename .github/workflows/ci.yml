@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: pytest -v
+
+  docker:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t fraud-detector:ci .
+      - name: Smoke test container
+        run: |
+          docker run -d -p 8000:8000 --name fd fraud-detector:ci
+          for i in $(seq 1 20); do
+            curl -sf http://localhost:8000/health && exit 0
+            sleep 2
+          done
+          docker logs fd
+          exit 1
+      - name: Push to Docker Hub
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+          docker tag fraud-detector:ci ${{ secrets.DOCKERHUB_USERNAME }}/fraud-detector:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/fraud-detector:latest

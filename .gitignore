@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+mlruns/
+models/
+data/creditcard.csv
+.venv/
+.pytest_cache/
+mlflow.db
