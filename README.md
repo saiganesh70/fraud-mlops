@@ -68,3 +68,13 @@ Add repo secrets `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` before the push step
   labelled transactions to see real drift.
 - The synthetic fallback data is much easier than the real dataset, so its scores
   (precision/recall above 0.9) are not representative. Report numbers from the real data.
+
+## Results (Kaggle Credit Card Fraud dataset)
+
+Trained locally on the full dataset (80/20 stratified split, SMOTE on train only, threshold 0.5):
+
+| Precision | Recall | F1 | ROC-AUC | PR-AUC |
+|---|---|---|---|---|
+| 0.63 | 0.86 | 0.72 | 0.983 | 0.872 |
+
+The live demo is trained on synthetic data (the real dataset is too large for the free hosting tier), so its scores are not representative.
